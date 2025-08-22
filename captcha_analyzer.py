@@ -4,7 +4,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 import pytesseract
 import os
 from typing import List, Tuple, Dict
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans  # Comentado porque no está instalado
 
 class CaptchaAnalyzer:
     def __init__(self):
@@ -144,30 +144,31 @@ class CaptchaAnalyzer:
         processed['combined_advanced'] = combined_thresh
         
         # 14. Técnica de segmentación por clustering de colores (simplificada)
-        if len(img.shape) == 3:
-            try:
-                clustered = self.color_clustering_segmentation(img)
-                processed['color_clustered'] = clustered
-            except:
-                pass  # Si falla, continuar sin esta técnica
+        # Comentado porque requiere sklearn
+        # if len(img.shape) == 3:
+        #     try:
+        #         clustered = self.color_clustering_segmentation(img)
+        #         processed['color_clustered'] = clustered
+        #     except:
+        #         pass  # Si falla, continuar sin esta técnica
         
         return processed
     
-    def color_clustering_segmentation(self, img: np.ndarray, k: int = 3) -> np.ndarray:
-        """Segmentación por clustering de colores"""
-        data = img.reshape((-1, 3))
-        data = np.float32(data)
-        
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 20, 1.0)
-        _, labels, centers = cv2.kmeans(data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-        
-        # Convertir de vuelta a uint8 y reshape
-        centers = np.uint8(centers)
-        segmented_data = centers[labels.flatten()]
-        segmented_img = segmented_data.reshape(img.shape)
-        
-        # Convertir a escala de grises
-        return cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
+    # def color_clustering_segmentation(self, img: np.ndarray, k: int = 3) -> np.ndarray:
+    #     """Segmentación por clustering de colores"""
+    #     data = img.reshape((-1, 3))
+    #     data = np.float32(data)
+    #     
+    #     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 20, 1.0)
+    #     _, labels, centers = cv2.kmeans(data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    #     
+    #     # Convertir de vuelta a uint8 y reshape
+    #     centers = np.uint8(centers)
+    #     segmented_data = centers[labels.flatten()]
+    #     segmented_img = segmented_data.reshape(img.shape)
+    #     
+    #     # Convertir a escala de grises
+    #     return cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
     
     def comprehensive_ocr_analysis(self, processed_images: Dict[str, np.ndarray]) -> List[Dict]:
         """Análisis OCR completo en todas las versiones procesadas"""
@@ -281,7 +282,7 @@ def analyze_captcha_file(image_path: str) -> str:
 
 if __name__ == "__main__":
     # Ejemplo de uso
-    analyzer = SimpleCaptchaAnalyzer()
+    analyzer = CaptchaAnalyzer()
     
     # Buscar archivos de captcha en el directorio actual
     captcha_files = [f for f in os.listdir('.') if f.lower().endswith(('.png', '.jpg', '.jpeg')) and 'captcha' in f.lower()]
